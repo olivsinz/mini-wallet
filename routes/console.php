@@ -10,3 +10,5 @@ Artisan::command('inspire', function (): void {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('telescope:prune --hours=48')->daily();
+
+Schedule::command('sanctum:prune-expired --hours=24')->daily();
