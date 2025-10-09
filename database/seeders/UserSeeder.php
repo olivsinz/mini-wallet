@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use APP\Models\User;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -30,5 +31,14 @@ final class UserSeeder extends Seeder
             'password' => bcrypt('password'),
             'balance' => 500.00,
         ]);
+
+        User::factory()
+            ->has(Transaction::factory()->count(3))
+            ->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'password' => bcrypt('password'),
+                'balance' => 1_000_000,
+            ]);
     }
 }
