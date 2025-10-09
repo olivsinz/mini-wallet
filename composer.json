@@ -17,7 +17,6 @@
         "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.16",
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.7",
@@ -106,6 +105,11 @@
             "@test:lint",
             "@test:types",
             "@test:profanity"
+        ],
+        "ide": [
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models --nowrite",
+            "@php artisan ide-helper:meta"
         ],
         "setup": [
             "composer install",
