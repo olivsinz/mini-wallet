@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +21,7 @@ final class TransactionFactory extends Factory
     public function definition(): array
     {
         $amount = fake()->randomFloat(2, 10, 1000);
-        $commissionFee = $amount * 0.15;
+        $commissionFee = $amount * Transaction::COMMISSION_RATE;
         $totalDeducted = $amount + $commissionFee;
 
         return [
@@ -45,11 +46,9 @@ final class TransactionFactory extends Factory
 
     public function withAmount(float $amount): static
     {
-        $commissionFee = 0.15;
-
         return $this->state(fn (array $attributes) => [
             'amount' => $amount,
-            'commission_fee' => $commissionFee,
+            'commission_fee' => $commissionFee = $amount * Transaction::COMMISSION_RATE,
             'total_deducted' => $amount + $commissionFee,
         ]);
     }

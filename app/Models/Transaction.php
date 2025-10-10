@@ -13,6 +13,11 @@ final class Transaction extends Model
     use HasFactory;
 
     /**
+     * Commission rate (1.5%)
+     */
+    public const COMMISSION_RATE = 0.015;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
