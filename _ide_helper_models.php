@@ -13,18 +13,17 @@
 
 namespace App\Models{
 /**
- * @property-read int $id
- * @property-read int $sender_id
- * @property-read int $receiver_id
- * @property-read float $amount
- * @property-read float $commission_fee
- * @property-read float $total_deducted
- * @property-read string $status
- * @property-read array|null $meta
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
+ * @property int $id
  * @property string $idempotency_key
- * @property string $total_debited
+ * @property string $amount
+ * @property string $commission_fee
+ * @property string $total_deducted
+ * @property string $status
+ * @property array<array-key, mixed>|null $metadata
+ * @property int $receiver_id
+ * @property int $sender_id
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \App\Models\User $receiver
  * @property-read \App\Models\User $sender
  * @method static \Database\Factories\TransactionFactory factory($count = null, $state = [])
@@ -36,11 +35,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereIdempotencyKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereMeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereMetadata($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereReceiverId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereSenderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereTotalDebited($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereTotalDeducted($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Transaction whereUpdatedAt($value)
  */
 	final class Transaction extends \Eloquent {}
@@ -48,17 +47,16 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * @property-read int $id
- * @property-read string $name
- * @property-read string $email
- * //  * @property-read decimal $balance
- * @property-read CarbonInterface|null $email_verified_at
- * @property-read string $password
- * @property-read string|null $remember_token
- * @property-read CarbonInterface $created_at
- * @property-read CarbonInterface $updated_at
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property \Carbon\CarbonImmutable|null $email_verified_at
+ * @property string $password
  * @property string $balance
  * @property bool $is_locked Account locking pour fraud prevention
+ * @property string|null $remember_token
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Transaction> $receivedTransactions

@@ -37,6 +37,11 @@ final class User extends Authenticatable
         'remember_token',
     ];
 
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
     /**
      * Get the transactions sent by the user.
      *
@@ -93,6 +98,7 @@ final class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance' => 'decimal:2',
             'is_locked' => 'boolean',
         ];
     }
@@ -129,5 +135,21 @@ final class User extends Authenticatable
     public function receivesBroadcastNotificationsOn(): string
     {
         return 'users.' . $this->id;
+    }
+
+    /**
+     * Lock account (fraud prevention)
+     */
+    public function lock(): void
+    {
+        $this->update(['is_locked' => true]);
+    }
+
+    /**
+     * Unlock account
+     */
+    public function unlock(): void
+    {
+        $this->update(['is_locked' => false]);
     }
 }

@@ -33,6 +33,7 @@ final class InsufficientBalanceException extends Exception
     {
         return response()->json([
             'message' => $this->getMessage(),
+            'error' => 'insufficient_balance',
         ], $this->getCode());
     }
 }

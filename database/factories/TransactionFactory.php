@@ -32,6 +32,8 @@ final class TransactionFactory extends Factory
             'commission_fee' => $commissionFee,
             'total_deducted' => $totalDeducted,
             'status' => 'completed',
+            'metadata' => null,
+            'processed_at' => null,
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }

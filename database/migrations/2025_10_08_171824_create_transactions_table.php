@@ -20,8 +20,8 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->decimal('commission_fee', 5, 2);
             $table->decimal('total_deducted', 15, 2);
-            $table->string('status')->default('completed');
-            $table->text('meta')->nullable();
+            $table->string('status')->default('pending');
+            $table->json('metadata')->nullable();
 
             $table->foreignId('receiver_id')
                 ->constrained('users')
@@ -31,6 +31,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->cascadeOnDelete();
 
+            $table->timestamp('processed_at')->nullable();
             $table->timestamps();
         });
     }

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Transactions;
 
+use App\Models\AuditLog;
+use App\Models\Transaction;
 use App\Models\User;
+use App\Services\WalletService;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 /**
  * @method \App\Models\User user()
@@ -18,11 +22,7 @@ final class CreateTransactionRequest extends FormRequest
      */
     public function authorize(#[CurrentUser] User $user): bool
     {
-        if ($user->isLocked()) {
-            return false;
-        }
-
-        return true;
+        return $user->isNotLocked();
     }
 
     /**
@@ -43,12 +43,11 @@ final class CreateTransactionRequest extends FormRequest
                 'required',
                 'numeric',
                 'gt:0',
-                // 'min:0.01',
-                'max:999999.99', // Limite transaction
-                'regex:/^\d+(\.\d{1,2})?$/', // Max 2 décimales
+                'decimal:2',
+                'max:' . Transaction::MAX_TRANSACTION_AMOUNT,
             ],
             'idempotency_key' => [
-                'nullable',
+                'required',
                 'string',
                 'uuid',
             ],
@@ -67,9 +66,8 @@ final class CreateTransactionRequest extends FormRequest
             'receiver_id.exists' => 'The specified recipient does not exist.',
             'receiver_id.different' => 'You cannot send money to yourself.',
             'amount.required' => 'Please specify an amount to send.',
-            'amount.min' => 'Amount must be at least 0.01.',
             'amount.gt' => 'The transaction amount must be greater than zero.',
-            'amount.max' => 'Amount exceeds maximum transaction limit.',
+            'amount.max' => 'Amount exceeds your maximum transaction limit.',
             'amount.regex' => 'Amount can have at most 2 decimal places.',
             'idempotency_key.uuid' => 'Invalid idempotency key format.',
         ];
@@ -82,6 +80,74 @@ final class CreateTransactionRequest extends FormRequest
     {
         $this->merge([
             'sender_id' => $this->user()?->id,
+            'amount' => (float) $this->input('amount'),
         ]);
+    }
+
+    /**
+     * Custom validation after standard rules pass.
+     * Checks if sender has sufficient balance including commission.
+     */
+    public function after(#[CurrentUser] User $user): array
+    {
+        return [
+            function (Validator $validator) use ($user) {
+
+                $this->ensureBalanceIsSufficient($user, $validator);
+
+                $this->ensureReceiverIsNotLocked($validator);
+
+                $amount = (float) $this->input('amount');
+
+                // Basic fraud detection
+                // Transaction > 50% of balance = suspicious
+                if ($amount > ($user->balance * 0.5)) {
+                    AuditLog::log(
+                        'large_transaction_attempted',
+                        $user->id,
+                        null,
+                        null,
+                        ['amount' => $amount, 'balance' => $user->balance]
+                    );
+                }
+            },
+        ];
+    }
+
+    /**
+     * Ensures the recipient account is not currently locked by
+     * adding an error to the validator if so. This check is done
+     * after the standard validation rules have passed.
+     */
+    private function ensureReceiverIsNotLocked(Validator $validator): void
+    {
+        $receiver = User::find($this->input('receiver_id'));
+
+        if ($receiver && $receiver->isLocked()) {
+            $validator->errors()->add(
+                'receiver_id',
+                'The recipient account is currently locked.'
+            );
+        }
+    }
+
+    /**
+     * Checks if the user has sufficient balance including commission
+     * and adds an error to the validator if not.
+     */
+    private function ensureBalanceIsSufficient(User $user, Validator $validator): void
+    {
+        $amount = (float) $this->input('amount');
+
+        $totalRequired = WalletService::calculateTotalDeduction($amount);
+
+        if ($user->balance < $totalRequired) {
+            $commissionRate = Transaction::COMMISSION_RATE * 100;
+
+            $validator->errors()->add(
+                'amount',
+                "Insufficient balance. Required: {$totalRequired} (including {$commissionRate}% commission), Available: {$user->balance}"
+            );
+        }
     }
 }

@@ -38,8 +38,7 @@ final class TransactionResource extends JsonResource
             'total_deducted' => (float) $this->total_deducted,
             'status' => $this->status,
             'created_at' => $this->created_at->toIso8601String(),
-            // 'is_incoming' => $this->isIncoming($userId),
-            // 'is_outgoing' => $this->isOutgoing($userId),
+            'transaction_type' => $this->getTypeForUser($userId),
             // 'formatted_date' => $this->created_at->format('M d, Y H:i'),
         ];
     }

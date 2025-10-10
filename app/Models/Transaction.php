@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 final class Transaction extends Model
 {
@@ -16,6 +17,14 @@ final class Transaction extends Model
      * Commission rate (1.5%)
      */
     public const COMMISSION_RATE = 0.015;
+
+    /**
+     * The maximum amount that can be transferred in a single transaction.
+     *
+     * This value is used to validate incoming transactions and prevent large
+     * transactions from being processed.
+     */
+    public const MAX_TRANSACTION_AMOUNT = 1_000_000;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +39,8 @@ final class Transaction extends Model
         'commission_fee',
         'total_deducted',
         'status',
-        'meta',
+        'metadata',
+        'processed_at',
     ];
 
     /**
@@ -61,7 +71,13 @@ final class Transaction extends Model
     public function casts(): array
     {
         return [
-            'meta' => 'array',
+            'metadata' => 'array',
+            'amount' => 'decimal:2',
+            'commission_fee' => 'decimal:2',
+            'total_deducted' => 'decimal:2',
+            'processed_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 
@@ -79,5 +95,55 @@ final class Transaction extends Model
     public function isOutgoing(int $userId): bool
     {
         return $this->sender_id === $userId;
+    }
+
+    public function getTypeForUser(int $userId): string
+    {
+        return $this->isIncoming($userId) ? 'received' : 'sent';
+    }
+
+    public function isFinal(): bool
+    {
+        return in_array($this->status, ['completed', 'failed', 'rolled_back']);
+    }
+
+    public function markAsProcessing(): void
+    {
+        $this->update(['status' => 'processing']);
+    }
+
+    public function markAsCompleted(): void
+    {
+        $this->update([
+            'status' => 'completed',
+            'processed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark the transaction as failed.
+     */
+    public function markAsFailed(): void
+    {
+        $this->update([
+            'status' => 'failed',
+            'processed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Boot the model.
+     *
+     * Triggered by Eloquent's boot method, set a default idempotency_key if one is not provided.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        self::creating(function ($transaction) {
+            if (empty($transaction->idempotency_key)) {
+                $transaction->idempotency_key = Str::uuid()->toString();
+            }
+        });
     }
 }
