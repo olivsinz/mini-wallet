@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
-    ->toExtend(\Illuminate\Database\Eloquent\Model::class)
+    ->toExtend(Illuminate\Database\Eloquent\Model::class)
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
