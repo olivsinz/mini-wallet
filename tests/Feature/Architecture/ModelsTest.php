@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\File;
 arch('models')
     ->expect('App\Models')
     ->toHaveMethod('casts')
-    ->toExtend('Illuminate\Database\Eloquent\Model')
+    ->toExtend(\Illuminate\Database\Eloquent\Model::class)
     ->toOnlyBeUsedIn([
         'App\Concerns',
         'App\Console',
@@ -27,7 +27,7 @@ arch('models')
         'Database\Seeders',
     ]);
 
-arch('ensure factories', function () {
+arch('ensure factories', function (): void {
     expect($models = getModels())->toHaveCount(2);
 
     foreach ($models as $model) {
@@ -37,7 +37,7 @@ arch('ensure factories', function () {
     }
 });
 
-arch('ensure datetime casts', function () {
+arch('ensure datetime casts', function (): void {
     expect($models = getModels())->toHaveCount(2);
 
     foreach ($models as $model) {
@@ -45,8 +45,8 @@ arch('ensure datetime casts', function () {
         $instance = $model::factory()->create();
 
         $dates = collect($instance->getAttributes())
-            ->filter(fn ($_, $key) => str_ends_with($key, '_at'))
-            ->reject(fn ($_, $key) => in_array($key, ['created_at', 'updated_at']));
+            ->filter(fn ($_, $key): bool => str_ends_with((string) $key, '_at'))
+            ->reject(fn ($_, $key): bool => in_array($key, ['created_at', 'updated_at']));
 
         foreach ($dates as $key => $value) {
             expect($instance->getCasts())->toHaveKey(
@@ -81,7 +81,7 @@ function getModels(): array
 
             return 'App\\' . $relativePath;
         })
-        ->filter(fn ($class) => is_subclass_of($class, Illuminate\Database\Eloquent\Model::class))
+        ->filter(fn ($class): bool => is_subclass_of($class, Illuminate\Database\Eloquent\Model::class))
         ->values()
         ->toArray();
 }

@@ -40,7 +40,7 @@ final class TransactionFactory extends Factory
 
     public function between(User $sender, User $receiver): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'sender_id' => $sender->id,
             'receiver_id' => $receiver->id,
         ]);
@@ -48,7 +48,7 @@ final class TransactionFactory extends Factory
 
     public function withAmount(float $amount): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'amount' => $amount,
             'commission_fee' => $commissionFee = $amount * Transaction::COMMISSION_RATE,
             'total_deducted' => $amount + $commissionFee,

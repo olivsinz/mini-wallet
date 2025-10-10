@@ -47,7 +47,7 @@ final class UserFactory extends Factory
 
     public function withBalance(float $balance): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'balance' => $balance,
         ]);
     }

@@ -104,7 +104,7 @@ final readonly class TransactionController extends Controller
         $executed = RateLimiter::attempt(
             $key,
             $maxAttempts,
-            function () {},
+            function (): void {},
             $decayMinutes * 60
         );
 

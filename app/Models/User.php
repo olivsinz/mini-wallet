@@ -85,7 +85,7 @@ final class User extends Authenticatable
      */
     public function isNotLocked(): bool
     {
-        return ! $this->islocked();
+        return ! $this->is_locked;
     }
 
     /**

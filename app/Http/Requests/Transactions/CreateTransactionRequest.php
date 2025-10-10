@@ -91,7 +91,7 @@ final class CreateTransactionRequest extends FormRequest
     public function after(#[CurrentUser] User $user): array
     {
         return [
-            function (Validator $validator) use ($user) {
+            function (Validator $validator) use ($user): void {
 
                 $this->ensureBalanceIsSufficient($user, $validator);
 

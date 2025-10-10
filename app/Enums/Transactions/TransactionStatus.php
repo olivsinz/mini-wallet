@@ -24,7 +24,7 @@ enum TransactionStatus: string
      */
     public static function toArray(): array
     {
-        return array_map(fn ($case) => [
+        return array_map(fn (\App\Enums\Transactions\TransactionStatus $case): array => [
             'value' => $case->value,
             'label' => $case->label(),
         ], self::cases());
@@ -35,7 +35,7 @@ enum TransactionStatus: string
      */
     public static function values(): array
     {
-        return array_map(fn ($case) => $case->value, self::cases());
+        return array_map(fn (\App\Enums\Transactions\TransactionStatus $case) => $case->value, self::cases());
     }
 
     /**
@@ -43,14 +43,14 @@ enum TransactionStatus: string
      */
     public static function fromString(?string $value): ?self
     {
-        if (! $value) {
+        if (in_array($value, [null, '', '0'], true)) {
             return null;
         }
 
         $value = Str::lower($value);
 
         return collect(self::cases())
-            ->first(fn ($case) => $case->value === $value);
+            ->first(fn ($case): bool => $case->value === $value);
     }
 
     /**

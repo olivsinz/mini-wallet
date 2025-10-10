@@ -16,7 +16,7 @@ final class Transaction extends Model
     /**
      * Commission rate (1.5%)
      */
-    public const COMMISSION_RATE = 0.015;
+    public const float COMMISSION_RATE = 0.015;
 
     /**
      * The maximum amount that can be transferred in a single transaction.
@@ -24,7 +24,7 @@ final class Transaction extends Model
      * This value is used to validate incoming transactions and prevent large
      * transactions from being processed.
      */
-    public const MAX_TRANSACTION_AMOUNT = 1_000_000;
+    public const int MAX_TRANSACTION_AMOUNT = 1_000_000;
 
     /**
      * The attributes that are mass assignable.
@@ -136,11 +136,11 @@ final class Transaction extends Model
      *
      * Triggered by Eloquent's boot method, set a default idempotency_key if one is not provided.
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
-        self::creating(function ($transaction) {
+        self::creating(function ($transaction): void {
             if (empty($transaction->idempotency_key)) {
                 $transaction->idempotency_key = Str::uuid()->toString();
             }

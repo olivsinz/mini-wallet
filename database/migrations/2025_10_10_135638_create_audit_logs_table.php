@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('audit_logs', function (Blueprint $table) {
+        Schema::create('audit_logs', function (Blueprint $table): void {
             $table->id();
 
             $table->string('action', 100)->comment('Action type (transaction_created, balance_updated, etc.)');

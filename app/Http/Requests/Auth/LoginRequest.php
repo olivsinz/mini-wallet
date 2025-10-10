@@ -17,7 +17,7 @@ use Illuminate\Validation\ValidationException;
  */
 final class LoginRequest extends FormRequest
 {
-    private const MAX_ATTEMPTS = 5;
+    private const int MAX_ATTEMPTS = 5;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -50,9 +50,9 @@ final class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         /** @var User|null $user */
-        $user = Auth::getProvider()->retrieveByCredentials($this->only('email', 'password'));
+        $user = Auth::getProvider()->retrieveByCredentials($this->only());
 
-        if (! $user || ! Auth::getProvider()->validateCredentials($user, $this->only('password'))) {
+        if (! $user || ! Auth::getProvider()->validateCredentials($user, $this->only())) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
