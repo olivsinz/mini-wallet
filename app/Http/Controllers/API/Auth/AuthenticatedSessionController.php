@@ -20,7 +20,7 @@ final readonly class AuthenticatedSessionController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'token' => $user->createToken('auth-token')->plainTextToken,
+            'access_token' => $user->createToken('auth-token')->plainTextToken,
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
