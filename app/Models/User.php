@@ -96,4 +96,38 @@ final class User extends Authenticatable
             'is_locked' => 'boolean',
         ];
     }
+
+    /**
+     * Check if the user is the sender or receiver of the given transaction.
+     */
+    public function isTransactionSenderOrReceiver(Transaction $transaction): bool
+    {
+        return $this->id === $transaction->sender_id || $this->id === $transaction->receiver_id;
+    }
+
+    /**
+     * Check if the user is the author (sender) of the given transaction.
+     */
+    public function isTransactionAuthor(Transaction $transaction): bool
+    {
+        return $this->id === $transaction->sender_id;
+    }
+
+    /**
+     * Check if user has sufficient balance for a transaction.
+     *
+     * @param  float  $amount  Total amount to deduct (including commission)
+     */
+    public function hasSufficientBalance(float $amount): bool
+    {
+        return $this->balance >= $amount;
+    }
+
+    /**
+     * Get the channels the user receives notifications on.
+     */
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'users.' . $this->id;
+    }
 }

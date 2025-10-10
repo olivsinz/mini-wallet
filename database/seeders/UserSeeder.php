@@ -33,7 +33,7 @@ final class UserSeeder extends Seeder
         ]);
 
         User::factory()
-            ->has(Transaction::factory()->count(3))
+            ->has(Transaction::factory()->count(25))
             ->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',

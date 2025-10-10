@@ -23,6 +23,16 @@ final class TransactionResource extends JsonResource
             'idempotency_key' => $this->idempotency_key,
             'sender_id' => $this->sender_id,
             'receiver_id' => $this->receiver_id,
+            'sender' => [
+                'id' => $this->sender->id,
+                'name' => $this->sender->name,
+                'email' => $this->sender->email,
+            ],
+            'receiver' => [
+                'id' => $this->receiver->id,
+                'name' => $this->receiver->name,
+                'email' => $this->receiver->email,
+            ],
             'amount' => (float) $this->amount,
             'commission_fee' => (float) $this->commission_fee,
             'total_deducted' => (float) $this->total_deducted,

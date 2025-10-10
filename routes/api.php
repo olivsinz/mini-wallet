@@ -13,8 +13,7 @@ Route::middleware('throttle:api')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('user', fn (Request $request) => $request->user());
 
-        Route::get('transactions', [TransactionController::class, 'index']);
-        Route::post('transactions', [TransactionController::class, 'store']);
+        Route::apiResource('transactions', TransactionController::class)->only(['index', 'store']);
 
         Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     });
